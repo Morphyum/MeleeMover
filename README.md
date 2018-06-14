@@ -8,6 +8,12 @@ MeleeMover is a BattleTech mod (using ModTek) that let's you move to another pos
 ## Features
 - You can now move to another melee position even when you stand next to the enemy.
 
+## Settings
+
+Setting | Type | Default | Description
+--- | --- | --- | ---
+sprintRangeMelee| bool | default true| Melee now can happen at sprint range.
+
 ## Download
 Downloads can be found on [github](https://github.com/Morphyum/MeleeMover/releases).
    
