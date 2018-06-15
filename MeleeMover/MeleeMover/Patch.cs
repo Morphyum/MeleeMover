@@ -15,9 +15,7 @@ namespace MeleeMover {
             List<CodeInstruction> instructionList = instructions.ToList();
             MethodInfo mi = AccessTools.Property(typeof(Vector3), nameof(Vector3.magnitude)).GetGetMethod();
             int index = instructionList.FindIndex(instruction => instruction.operand == mi) - 1;
-            Debug.Log("INSTRUCTION before remove: " + instructionList[index]);
             instructionList.RemoveRange(index, 6);
-            Debug.Log("INSTRUCTION: " + instructionList[index]);
             instructionList[index].labels.Clear();
             return instructionList;
         }
@@ -32,6 +30,22 @@ namespace MeleeMover {
                 if (settings.sprintRangeMelee) {
                     PathNodeGrid SprintingGrid = (PathNodeGrid)ReflectionHelper.InvokePrivateMethode(__instance, "get_SprintingGrid", null);
                     __result = SprintingGrid;
+                }
+            }
+            catch (Exception e) {
+                Logger.LogError(e);
+            }
+        }
+    }
+
+    [HarmonyPatch(typeof(Mech))]
+    [HarmonyPatch("MaxMeleeEngageRangeDistance", PropertyMethod.Getter)]
+    public static class Pathing_MaxMeleeEngageRangeDistance_Getter_Patch {
+        static void Postfix(Mech __instance, ref float __result) {
+            try {
+                Settings settings = Helper.LoadSettings();
+                if (settings.sprintRangeMelee) {
+                    __result = __instance.MaxSprintDistance;
                 }
             }
             catch (Exception e) {
