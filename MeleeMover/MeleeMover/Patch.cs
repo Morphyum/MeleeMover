@@ -17,12 +17,14 @@ namespace MeleeMover {
             int index = instructionList.FindIndex(instruction => instruction.operand == mi) - 1;
             instructionList.RemoveRange(index, 6);
             instructionList[index].labels.Clear();
-            
-            PropertyInfo prop = AccessTools.Property(typeof(Pathing), "MeleeGrid");
-            MethodInfo miold = prop.GetGetMethod(true);
-            MethodInfo minew = AccessTools.Property(typeof(Pathing), "SprintingGrid").GetGetMethod(true);
 
-            return instructionList.MethodReplacer(miold, minew);
+            Settings settings = Helper.LoadSettings();
+            if (settings.sprintRangeMelee == true) {
+                MethodInfo miold = AccessTools.Property(typeof(Pathing), "MeleeGrid").GetGetMethod(true);
+                MethodInfo minew = AccessTools.Property(typeof(Pathing), "SprintingGrid").GetGetMethod(true);
+                instructionList = instructionList.MethodReplacer(miold, minew).ToList();
+            }
+            return instructionList;
         }
     }
 
@@ -30,9 +32,13 @@ namespace MeleeMover {
     [HarmonyPatch("getGrid")]
     public static class Pathing_getGrid_Patch {
         public static IEnumerable<CodeInstruction> Transpiler(IEnumerable<CodeInstruction> instructions) {
-            MethodInfo miold = AccessTools.Property(typeof(Pathing), "MeleeGrid").GetGetMethod(true);
-            MethodInfo minew = AccessTools.Property(typeof(Pathing), "SprintingGrid").GetGetMethod(true);
-            return instructions.MethodReplacer(miold, minew);
+            Settings settings = Helper.LoadSettings();
+            if (settings.sprintRangeMelee == true) {
+                MethodInfo miold = AccessTools.Property(typeof(Pathing), "MeleeGrid").GetGetMethod(true);
+                MethodInfo minew = AccessTools.Property(typeof(Pathing), "SprintingGrid").GetGetMethod(true);
+                instructions = instructions.MethodReplacer(miold, minew);
+            }
+            return instructions;
         }
     }
 
@@ -40,12 +46,16 @@ namespace MeleeMover {
     [HarmonyPatch("SetMeleeTarget")]
     public static class Pathing_SetMeleeTarget_Patch {
         public static IEnumerable<CodeInstruction> Transpiler(IEnumerable<CodeInstruction> instructions) {
-            MethodInfo miold = AccessTools.Property(typeof(Pathing), "MeleeGrid").GetGetMethod(true);
-            MethodInfo minew = AccessTools.Property(typeof(Pathing), "SprintingGrid").GetGetMethod(true);
-            return instructions.MethodReplacer(miold, minew);
+            Settings settings = Helper.LoadSettings();
+            if (settings.sprintRangeMelee == true) {
+                MethodInfo miold = AccessTools.Property(typeof(Pathing), "MeleeGrid").GetGetMethod(true);
+                MethodInfo minew = AccessTools.Property(typeof(Pathing), "SprintingGrid").GetGetMethod(true);
+                instructions = instructions.MethodReplacer(miold, minew);
+            }
+            return instructions;
         }
     }
-    
+
 
 
 
